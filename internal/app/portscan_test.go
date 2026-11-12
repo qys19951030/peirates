@@ -11,8 +11,11 @@ func TestCIDRHosts(t *testing.T) {
 	if len(got) != 2 || got[0] != "192.0.2.1" || got[1] != "192.0.2.2" {
 		t.Fatalf("hosts = %#v", got)
 	}
-	if got := cidrHosts("192.0.2.1/32"); len(got) != 0 {
+	if got := cidrHosts("192.0.2.1/32"); len(got) != 1 || got[0] != "192.0.2.1" {
 		t.Fatalf("/32 hosts = %#v", got)
+	}
+	if got := cidrHosts("192.0.2.0/31"); len(got) != 2 || got[0] != "192.0.2.0" || got[1] != "192.0.2.1" {
+		t.Fatalf("/31 hosts = %#v", got)
 	}
 }
 

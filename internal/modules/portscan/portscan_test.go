@@ -5,16 +5,6 @@ import (
 	"testing"
 )
 
-func TestCIDRHosts(t *testing.T) {
-	got := CIDRHosts("192.0.2.0/30")
-	if len(got) != 2 || got[0] != "192.0.2.1" || got[1] != "192.0.2.2" {
-		t.Fatalf("hosts = %#v", got)
-	}
-	if got := CIDRHosts("192.0.2.1/32"); len(got) != 0 {
-		t.Fatalf("/32 hosts = %#v", got)
-	}
-}
-
 func TestScanWorkerReportsOpenAndClosedPorts(t *testing.T) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {

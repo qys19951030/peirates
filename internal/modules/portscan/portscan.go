@@ -2,7 +2,6 @@
 package portscan
 
 import (
-	"encoding/binary"
 	"fmt"
 	"net"
 	"sort"
@@ -51,22 +50,4 @@ func Scan(ip string) {
 	for _, port := range openPorts {
 		fmt.Printf("%s:%d open\n", ip, port)
 	}
-}
-
-// CIDRHosts returns the usable IPv4 host addresses in a CIDR network.
-func CIDRHosts(network string) []string {
-	_, ipv4Net, err := net.ParseCIDR(network)
-	if err != nil {
-		panic(err)
-	}
-	mask := binary.BigEndian.Uint32(ipv4Net.Mask)
-	start := binary.BigEndian.Uint32(ipv4Net.IP)
-	finish := (start & mask) | (mask ^ 0xffffffff)
-	var hosts []string
-	for address := start + 1; address <= finish-1; address++ {
-		ip := make(net.IP, 4)
-		binary.BigEndian.PutUint32(ip, address)
-		hosts = append(hosts, ip.String())
-	}
-	return hosts
 }
