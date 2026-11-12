@@ -17,7 +17,8 @@ func runModuleCommand(registry *modules.Registry, session *Session, input string
 	fields := strings.Fields(input)
 	if len(fields) > 1 {
 		command := canonicalModuleCommand(fields[0])
-		if command == "azure-get-token" || command == "aws-get-eks-node-token" {
+		switch command {
+		case "azure-get-token", "aws-get-eks-node-token":
 			args, err := parseCommandArgs(input)
 			if err != nil {
 				label := "Azure token"
@@ -29,6 +30,18 @@ func runModuleCommand(registry *modules.Registry, session *Session, input string
 				requestAWSNodeToken(session, args[1:], os.Stdout)
 			} else {
 				requestAzureToken(session, args[1:], os.Stdin, os.Stdout)
+			}
+			return modules.Continue, true
+		case "tcpscan":
+			args, err := parseCommandArgs(input)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "[-] port scan failed: %v\n", err)
+				return modules.Continue, true
+			}
+			if handled, scanErr := runNonInteractivePortScan(args, portScanFlagOptions, os.Stdout); scanErr != nil {
+				fmt.Fprintf(os.Stderr, "[-] port scan failed: %v\n", scanErr)
+			} else if !handled {
+				tcpScan(session.Interactive)
 			}
 			return modules.Continue, true
 		}
