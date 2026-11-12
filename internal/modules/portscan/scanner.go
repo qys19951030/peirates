@@ -15,9 +15,6 @@ func ScanHost(ctx context.Context, host string, config Config) (HostResult, erro
 		return HostResult{}, errors.New("host must not be empty")
 	}
 	report, err := Sweep(ctx, []string{host}, config)
-	if err != nil && len(report.Hosts) == 0 {
-		return HostResult{Host: host}, err
-	}
 	if len(report.Hosts) == 0 {
 		return HostResult{Host: host}, err
 	}

@@ -134,7 +134,7 @@ func runProbeWorker(
 				resultMu.Unlock()
 				continue
 			}
-			result := dialProbe(hostCtx, dialer, job.host, job.port)
+			result := probeHook(hostCtx, dialer, job.host, job.port)
 			resultMu.Lock()
 			portResults[job.hostIndex] = append(portResults[job.hostIndex], result)
 			resultMu.Unlock()

@@ -160,6 +160,10 @@ func (limiter *rateLimiter) stop() {
 	limiter.wg.Wait()
 }
 
+// probeHook is the single connection attempt used by the engine. Tests may
+// temporarily replace it to observe concurrency; production code uses dialProbe.
+var probeHook = dialProbe
+
 // dialProbe attempts one TCP connection and returns its structured result.
 func dialProbe(ctx context.Context, dialer *net.Dialer, host string, port int) PortResult {
 	result := PortResult{Port: port, Status: PortClosed}
