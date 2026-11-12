@@ -72,6 +72,16 @@ func TestMainSafeModuleHelper(t *testing.T) {
 		}
 	}
 	os.Args = []string{"peirates", "-c", "-m", os.Getenv("PEIRATES_TEST_MODULE")}
+	if target := os.Getenv("PEIRATES_SCAN_TARGET"); target != "" {
+		os.Args = append(os.Args,
+			"-scan-target", target,
+			"-scan-ports", os.Getenv("PEIRATES_SCAN_PORTS"),
+			"-scan-workers", os.Getenv("PEIRATES_SCAN_WORKERS"),
+		)
+		if os.Getenv("PEIRATES_SCAN_JSON") == "1" {
+			os.Args = append(os.Args, "-scan-json")
+		}
+	}
 	Main()
 }
 

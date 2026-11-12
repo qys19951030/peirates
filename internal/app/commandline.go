@@ -13,6 +13,10 @@ type CommandLineOptions struct {
 	connectionConfig *ServerInfo
 	moduleToRun      string
 	verbose          bool
+	portScanTarget   string
+	portScanPorts    string
+	portScanWorkers  int
+	portScanJSON     bool
 }
 
 // parseOptions parses command-line options. We call it in main().
@@ -30,6 +34,10 @@ func parseOptions(opts *CommandLineOptions) {
 	flagset.StringVar(&opts.connectionConfig.Token, "t", opts.connectionConfig.Token, "Token (JWT)")
 	flagset.StringVar(&opts.moduleToRun, "m", "", "module to run from menu - items on main menu with an * support this.")
 	flagset.BoolVar(&opts.verbose, "v", false, "verbose mode - display debug messages")
+	flagset.StringVar(&opts.portScanTarget, "scan-target", "", "target IP address or CIDR network for a non-interactive tcpscan")
+	flagset.StringVar(&opts.portScanPorts, "scan-ports", "", "port specification for a non-interactive tcpscan, e.g. 22,80,443,8000-8080")
+	flagset.IntVar(&opts.portScanWorkers, "scan-workers", 0, "maximum concurrent scan workers for a non-interactive tcpscan")
+	flagset.BoolVar(&opts.portScanJSON, "scan-json", false, "emit the non-interactive tcpscan report as JSON")
 
 	// This is the function that actually runs the parser
 	// once you've defined all your options.

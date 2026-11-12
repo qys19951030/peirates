@@ -2,10 +2,22 @@ package app
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 )
 
 func tcpScan(interactive bool) {
+	if !interactive {
+		fields := splitModuleFields(scanModuleArgs())
+		handled, err := runNonInteractivePortScan(fields, currentPortScanOptions(), os.Stdout)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "[-] port scan failed: %v\n", err)
+		}
+		if handled {
+			return
+		}
+	}
+
 	var input string
 	var matched bool
 
@@ -40,7 +52,12 @@ func tcpScan(interactive bool) {
 		}
 		if checkPattern2 {
 			println("Hidden CIDR scan mode used - this may be slow or unpredictable")
-			hostList := cidrHosts(input)
+			hostList, parseErr := parseCIDRHosts(input)
+			if parseErr != nil {
+				println("Error parsing CIDR: " + parseErr.Error())
+				pauseToHitEnter(interactive)
+				return
+			}
 			for _, host := range hostList {
 				println("Scanning " + host)
 				scanController(host)

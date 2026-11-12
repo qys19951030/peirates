@@ -53,6 +53,8 @@ func Main() {
 
 	// Run the option parser to initialize connectionStrings
 	parseOptions(&cmdOpts)
+	moduleArgs = cmdOpts.moduleToRun
+	portScanFlagOptions = cmdOpts
 	session.Verbose = cmdOpts.verbose
 	// The node-token module acquires its own credentials through bounded IMDS.
 	// Dispatch before legacy startup probes or unrelated credential enumeration.
