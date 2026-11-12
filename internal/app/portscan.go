@@ -3,7 +3,6 @@ package app
 import (
 	"context"
 	"io"
-	"time"
 
 	"github.com/inguardians/peirates/internal/modules/portscan"
 )
@@ -35,9 +34,6 @@ func runPortScan(ctx context.Context, options portScanOptions, output outputSink
 	config.Ports = ports
 	if options.workers > 0 {
 		config.MaxWorkers = options.workers
-	}
-	if config.HostDeadline > 30*time.Second {
-		config.HostDeadline = 30 * time.Second
 	}
 	report, err := portscan.Sweep(ctx, []string{options.target}, config)
 	if options.json {

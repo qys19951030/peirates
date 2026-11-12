@@ -97,6 +97,41 @@ func TestSweepReturnsErrorForInvalidTarget(t *testing.T) {
 	}
 }
 
+func TestSweepScansIPv6Loopback(t *testing.T) {
+	listener, err := net.Listen("tcp", "[::1]:0")
+	if err != nil {
+		t.Skipf("IPv6 loopback unavailable: %v", err)
+	}
+	defer listener.Close()
+	openPort := listener.Addr().(*net.TCPAddr).Port
+	go func() {
+		for {
+			conn, acceptErr := listener.Accept()
+			if acceptErr != nil {
+				return
+			}
+			_ = conn.Close()
+		}
+	}()
+
+	report, err := Sweep(context.Background(), []string{"::1/128"}, Config{
+		DialTimeout:        100 * time.Millisecond,
+		HostDeadline:       5 * time.Second,
+		MaxWorkers:         2,
+		RateLimitPerSecond: 0,
+		Ports:              []int{openPort},
+	})
+	if err != nil {
+		t.Fatalf("IPv6 sweep returned error: %v", err)
+	}
+	if report.TotalHosts != 1 || report.Hosts[0].Host != "::1" {
+		t.Fatalf("IPv6 report = %+v", report)
+	}
+	if len(report.Hosts[0].OpenPorts) != 1 || report.Hosts[0].OpenPorts[0] != openPort {
+		t.Fatalf("IPv6 open ports = %#v", report.Hosts[0].OpenPorts)
+	}
+}
+
 func TestSweepStopsOnCancellation(t *testing.T) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
